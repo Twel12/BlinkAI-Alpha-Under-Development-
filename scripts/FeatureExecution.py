@@ -30,7 +30,7 @@ def takeCommand():
     print("Listening....")
     pygame.mixer.pre_init(44100, -16, 1, 512)
     pygame.mixer.init()
-    pygame.mixer.music.load(relative_to_assets("notification_sound.mp3"))
+    pygame.mixer.music.load(relative_to_assets("assistant_voice_started.mp3"))
     pygame.mixer.music.play()
     r = sr.Recognizer()
     r.dynamic_energy_threshold = False

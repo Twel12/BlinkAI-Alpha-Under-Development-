@@ -68,6 +68,18 @@ entry_1 = Entry(
     font=("Inter", 20 * -1),
 )
 
+entry_image_1 = PhotoImage(
+    file=relative_to_assets("entry_1.png"))
+
+button_image_1 = PhotoImage(
+    file=relative_to_assets("close.png"))
+
+button_image_2 = PhotoImage(
+    file=relative_to_assets("microphone.png"))
+
+button_image_4 = PhotoImage(
+    file=relative_to_assets("return-key.png"))
+
 canvas.create_text(
     375.0,
     11.0,
@@ -77,14 +89,14 @@ canvas.create_text(
     font=("Inter", 25 * -1)
 )
 
-canvas.create_text(
-    36.0,
-    461.0,
-    anchor="nw",
-    text="Ask me anything...",
-    fill="#494343",
-    font=("Inter", 20 * -1)
-)
+# canvas.create_text(
+#     36.0,
+#     461.0,
+#     anchor="nw",
+#     text="Ask me anything...",
+#     fill="#494343",
+#     font=("Inter", 20 * -1)
+# )
 
 canvas.create_text(
     229.0,
@@ -95,23 +107,11 @@ canvas.create_text(
     font=("OpenSansRoman Regular", 40 * -1)
 )
 
-entry_image_1 = PhotoImage(
-    file=relative_to_assets("entry_1.png"))
-
 entry_bg_1 = canvas.create_image(
     400.0,
     474.0,
     image=entry_image_1
 )
-
-button_image_1 = PhotoImage(
-    file=relative_to_assets("close11.png"))
-
-button_image_2 = PhotoImage(
-    file=relative_to_assets("voice-search.png"))
-
-button_image_4 = PhotoImage(
-    file=relative_to_assets("enter2.png"))
 
 button_1 = Button(
     image=button_image_1,
