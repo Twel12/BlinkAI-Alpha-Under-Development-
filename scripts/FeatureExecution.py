@@ -1,4 +1,4 @@
-from speech import speak
+import VoiceRun as vr
 import datetime
 import wikipedia
 import webbrowser
@@ -8,8 +8,7 @@ import subprocess
 import requests
 import wolframalpha
 import os
-import playsound
-import winshell
+# import winshell
 import speech_recognition as sr
 import pywhatkit
 import keyboard
@@ -17,100 +16,115 @@ from inputmode import mode_select
 from standardfunctions import *
 from dialogue import *
 from api_keys import *
+import pygame
+from pathlib import Path
+BlinkInputMode=0 #Globally declare input as text default
 
-def takeCommand():     
-		print("Listening....")
-		r = sr.Recognizer()
-		r.dynamic_energy_threshold=False
-		r.energy_threshold=4000
-		r.pause_threshold = 1
-		with sr.Microphone() as source:
-			r.adjust_for_ambient_noise(source)
-			audio = r.listen(source)
-			said=""
-		try:
-			print("Recognizing....")
-			said = r.recognize_google(audio,language='en')
-			print(f"You Said : {said}\n")
-		except sr.UnknownValueError :
-			print("could not understand audio \n~Trying Again~")
-			return takeCommand()
-		except sr.RequestError as e:
-			print("Could not request results, check your internet connection; {0}".format(e))
-			return "None"    
-		return said.lower()
+OUTPUT_PATH = Path(__file__).parent
+ASSETS_PATH = OUTPUT_PATH / Path(r"assets/frame0")
+
+def relative_to_assets(path: str) -> Path:
+    return ASSETS_PATH / Path(path)
+
+def takeCommand():
+    print("Listening....")
+    pygame.mixer.pre_init(44100, -16, 1, 512)
+    pygame.mixer.init()
+    pygame.mixer.music.load(relative_to_assets("notification_sound.mp3"))
+    pygame.mixer.music.play()
+    r = sr.Recognizer()
+    r.dynamic_energy_threshold = False
+    r.energy_threshold = 4000
+    r.pause_threshold = 1
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source)
+        audio = r.listen(source)
+        said = ""
+    try:
+        print("Recognizing....")
+        said = r.recognize_google(audio, language='en')
+        print(f"You Said : {said}\n")
+    except sr.UnknownValueError:
+        print("could not understand audio \n~Trying Again~")
+        return takeCommand()
+    except sr.RequestError as e:
+        print(
+            "Could not request results, check your internet connection; {0}".format(e))
+        return "None"
+    return said.lower()
+
 
 def takecommand_text():
-    query=input(">> ")
+    query = input(">> ")
     return query.lower()
 
+
 def take_input(variable):
-        if variable==0:
-            return takecommand_text()
-        elif variable==1:
-            return takeCommand()
+    if variable == 0:
+        return takecommand_text()
+    elif variable == 1:
+        return takeCommand()
+
 
 def wishMe():
-    hour=datetime.datetime.now().hour
-    if hour>=0 and hour<12:
-        playsound._playsoundWin(os.path.join('soundeffects\sfx',"gm.mp3"))
+    hour = datetime.datetime.now().hour
+    if hour >= 0 and hour < 12:
+        # playsound._#playsoundWin(os.path.join('soundeffects\sfx',"gm.mp3"))
         print("Hello,Good Morning")
-    elif hour>=12 and hour<18:
-        playsound._playsoundWin(os.path.join('soundeffects\sfx',"ga.mp3"))
+    elif hour >= 12 and hour < 18:
+        # playsound._#playsoundWin(os.path.join('soundeffects\sfx',"ga.mp3"))
         print("Hello,Good Afternoon")
     else:
-        playsound._playsoundWin(os.path.join('soundeffects\sfx',"ge.mp3"))
+        # playsound._#playsoundWin(os.path.join('soundeffects\sfx',"ge.mp3"))
         print("Hello,Good Evening")
     time.sleep(2)
 
-def chat(conversation_mode):      #here conversation mode is referenced to either text or speech input
+
+def chat(conversation_mode):  # here conversation mode is referenced to either text or speech input
     '''with randomstuff.Client(api_key='YOUR-API-KEY-HERE') as client:  #API KEY REQUIRED HERE
-        while True: 
+        while True:
             chat_message=take_input(conversation_mode)
-            response = client.get_ai_response(chat_message,bot="Knick", master="Arsh")
+            response = client.get_ai_response(
+                chat_message,bot="Blink", master="Arsh")
             print(response.message)
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"notification.mp3"))
-            if 'bye' in chat_message : 
-                break        
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"notification.mp3"))
+            if 'bye' in chat_message :
+                break
     time.sleep(1)'''
-    print("Chat Feature is Down till next Update ",conversation_mode)
+    print("Chat Feature is Down till next Update ", conversation_mode)
 
 def note(text):
     '''date = datetime.datetime.now()'''
-    r = random.randint(1,20000000)
-    note_name=("knick-note"+ str(r))
+    r = random.randint(1, 20000000)
+    note_name = ("Blink-note" + str(r))
     with open(note_name, "w") as f:
         f.write(text)
-    print("Note saved as : ",note_name)
+    print("Note saved as : ", note_name)
     subprocess.Popen(["notepad.exe", note_name])
 
-#here is the exceution functions i made it, so that the main code looks a bit clean XD
-def showmagic():
-    knick_input_mode= mode_select()
-    while True:
-        #playsound.playsound(os.path.join('soundeffects\sfx',"howcanihelpyounow.mp3"))
-        #print("\nTell Me How Can I Help you Now ?")
-        ask=any_random(asking)
-        print("\n",ask)
-        speak(ask+".")
-        statement=take_input(knick_input_mode)
+# here is the exceution functions i made it, so that the main code looks a bit clean XD
 
-        if statement==None:
-            print("No Input Detected!\n")
-            continue
+def showmagic(statement):
+    
+        ##playsound.#playsound(os.path.join('soundeffects\sfx',"howcanihelpyounow.mp3"))
+        #print("\nTell Me How Can I Help you Now ?")
+
+    if statement==None:
+        print("No Input Detected!\n")
         
-        elif "good bye" in statement or "ok bye" in statement or "stop" in statement or "bye" in statement or "quit" in statement:
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"shuttingdown.mp3"))
+    else:
+        if "good bye" in statement or "ok bye" in statement or "stop" in statement or "bye" in statement or "quit" in statement:
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"shuttingdown.mp3"))
             print("\n")
-            print('    Your Personal Assistant Knick is Shutting Down,Good bye.     ')
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','powerdown.mp3'))
+            print('    Your Personal Assistant Blink is Shutting Down,Good bye.     ')
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx','powerdown.mp3'))
             print("~   The BOT went Offline    ~")
             time.sleep(4)
             cleaner()
             quit()
-        
+
         elif "pause" in statement:
-            speak("Assistant Paused.")
+            vr.Speak("Assistant Paused.")
             print("ok i am paused\nPress 'W' whenever You Want Me to Resume")
             print("  ")
             from console import assistant_pause,assistant_resumed
@@ -118,14 +132,13 @@ def showmagic():
             print("  ")
             while True :
                 if keyboard.is_pressed('w'):
-                    speak("Assistant Resumed.")
+                    vr.Speak("Assistant Resumed.")
                     print(assistant_resumed)
                     print("  ")
                     break
-            continue
-        
+
         elif "hibernate" in statement or "sleep" in statement: #note this feature only works if there is a mic connected. 
-            speak("Hibernating.")
+            vr.Speak("Hibernating.")
             print("please use the wakeword to wake me up, till then i'll be going undercover.")
             print("Available Wake Words :\n1.Assistant activate\n2.wake up assistant")
             time.sleep(2)
@@ -134,7 +147,7 @@ def showmagic():
             quit() #when this part of the code worked,beleive me... it was cool as Af.
 
         elif "no thanks"==statement:
-            speak("ok, i will sleep for some time then.")
+            vr.Speak("ok, i will sleep for some time then.")
             print("ok, i will sleep for some time then.")
             print("\nuse the wakeword to awake me, till then i'll be going undercover.")
             time.sleep(2)
@@ -144,46 +157,46 @@ def showmagic():
         elif "hi"==statement or "hello" in statement :
             hello_greating=any_random(hello)
             print(hello_greating,"\n(NOTE:if you wanna have chat with me. just use the 'Lets Chat' command)")
-            speak(hello_greating)
+            vr.Speak(hello_greating)
             time.sleep(1)
 
-        elif "open youtube and search for" in statement or "open youtube and search" in statement:
-                query=statement.split('open youtube and search for')
+        elif " youtube and search " in statement or "search youtube for" in statement:
+                query=statement.split('youtube and search for')
                 srch=query
                 print("Searching for : ",srch," on youtube")
                 print("opening youtube...")
                 sss=(f"https://www.youtube.com/results?search_query="+
                         "+".join(srch))
                 pywhatkit.playonyt(sss)
-                playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+                #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
                 time.sleep(1)
 
         elif 'open youtube' in statement:
-                print('Opening Youtube...')
+                vr.Speak('Opening Youtube...')
                 webbrowser.open_new_tab("https://www.youtube.com")
-                time.sleep(3)
+                time.sleep(1)
                 print("youtube is open now.")
-                playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-                time.sleep(5)
-       
+                #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+                time.sleep(2)
+
         elif 'open github' in statement:
             print('Opening GitHub...')
             webbrowser.open_new_tab("https://github.com/")
             print('GitHub is now Open.')
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(5)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(2)
 
         elif 'open google' in statement:
             webbrowser.open_new_tab("https://www.google.com")
             print("Google chrome is open now.")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(5)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(2)
 
         elif "snipping tool" in statement:
             print("Opening Snipping Tool")
             os.system("start snippingtool")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(5)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(2)
 
         elif "screenshot" in statement:
             import random
@@ -191,73 +204,58 @@ def showmagic():
             import pyscreenshot
             image = pyscreenshot.grab()
             r = random.randint(1,20000000)
-            file_name=("knickscreenshot"+ str(r) +".png")
+            file_name=("Blinkscreenshot"+ str(r) +".png")
             image.save(file_name)
             print("Screenshot saved as : ",file_name)
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"done.wav"))
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"done.wav"))
             time.sleep(2)
-
-        elif "handwriting" in statement:
-            speak("Enter the text you want to Convert ?")
-            vars=input("Enter the Text which you want to convert into Your Handwriting. \n>>")
-            pywhatkit.text_to_handwriting(string=vars,save_to="handwriting.png")
-            print("Your Text to HandWriting Conversion is Done!\nTIP: To check your Result, Check for handwriting.png File")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"done.wav"))
-            time.sleep(3)
-
-        elif "image conversion" in statement :
-            ima=input("Enter the Path of Image :")
-            pywhatkit.image_to_ascii_art(imgpath=ima,output_file="knick_asciiart.txt")
-            print("i have Made Your ASCII art and also saved it.")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"done.wav"))
-            time.sleep(3)
 
         elif "edge" in statement:
             print("Opening Microsoft Edge")
             os.system("start msedge")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3")) 
-            time.sleep(5)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3")) 
+            time.sleep(2)
 
         elif 'open whatsapp' in statement or 'whatsapp' in statement:
             webbrowser.open_new_tab('https://web.whatsapp.com/')
             print('opening WhatsApp Web')
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
             time.sleep(6)
 
         elif 'open instagram' in statement or 'instagram' in statement:
             webbrowser.open_new_tab('https://www.instagram.com/')
             print('opening Instagram')
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
             time.sleep(6)
 
         elif 'open gmail' in statement:
             webbrowser.open_new_tab("gmail.com")
             print("Google Mail is open now.")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(5)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(2)
 
         elif 'open discord' in statement or 'discord' in statement:
             webbrowser.open_new_tab("https://discord.com/channels/@me")
             print("discord is open now.")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(5)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(2)
 
         elif 'open facebook' in statement:
             print('opening facebook...')
             webbrowser.open_new_tab("https://www.facebook.com/")
             print('facebook is open now.')
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(5)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(2)
 
         elif "open stackoverflow" in statement:
             webbrowser.open_new_tab("https://stackoverflow.com/login")
             print("Here is stackoverflow")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(3)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(1)
 
         elif 'clear cache' in statement or 'clear system cache' in statement or 'boost system' in statement:
-            speak("Clearing system Cache....")
-            speak("please do not touch anything for a while, the automated process is starting.")
+            vr.Speak("Clearing system Cache....")
+            vr.Speak("please do not touch anything for a while, the automated process is starting.")
             keyboard.press_and_release('win+R')
             time.sleep(1)
             keyboard.write("%temp%",delay=0.1)
@@ -272,72 +270,72 @@ def showmagic():
             keyboard.press_and_release("enter")
             print ('Starting the removal of the file !\n')
             print("If you see any Error, just Delete the Temp Folder manually.")
-            time.sleep(3)
+            time.sleep(1)
 
         elif "open my inbox" in statement:
             webbrowser.open_new_tab("https://mail.google.com/mail/u/0/#inbox")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(3)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(1)
 
         elif "open my sent mails" in statement or "open my sent mail" in statement:
             webbrowser.open_new_tab("https://mail.google.com/mail/u/0/#sent")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(3)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(1)
 
         elif 'open terminal' in statement or 'cmd' in statement:
             os.startfile ("cmd")
             print("Command Prompt is Open Now")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
-            time.sleep(3)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"taskcompleted.mp3"))
+            time.sleep(1)
 
         elif 'log off' in statement or 'sign out' in statement:
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"logoff.mp3"))
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"logoff.mp3"))
             subprocess.call(["shutdown", "/l"])
-        
+
         elif "shutdown" in statement or "shut down" in statement:
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"logoff.mp3"))
-            time.sleep(3)
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"shutdown.mp3"))
-            time.sleep(3)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"logoff.mp3"))
+            time.sleep(1)
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"shutdown.mp3"))
+            time.sleep(1)
             os.system('shutdown/s')
 
         elif "restart my pc" in statement:
-            speak("okay, restarting your pc")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"logoff.mp3"))
+            vr.Speak("okay, restarting your pc")
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"logoff.mp3"))
             os.system('shutdown/r')
         
         elif 'date today' in statement or 'today date' in statement:
             from datetoday import today_date
             print(today_date())
-            speak(today_date())
-            time.sleep(3)
+            vr.Speak(today_date())
+            time.sleep(1)
         
-        elif "empty recycle bin" in statement:
-                winshell.recycle_bin().empty(
-                    confirm=True, show_progress=False, sound=True
-                )
-                speak("you should press enter if any dialog box appears.")
-                time.sleep(1.3)
-                speak("Recycle Bin Emptied")
-                
+        # elif "empty recycle bin" in statement:
+        #         winshell.recycle_bin().empty(
+        #             confirm=True, show_progress=False, sound=True
+        #         )
+        #         vr.Speak("you should press enter if any dialog box appears.")
+        #         time.sleep(1.3)
+        #         vr.Speak("Recycle Bin Emptied")
+
         elif "note" in statement or "remember this" in  statement:
                 print("What would you like me to write down?")
-                speak("What would you like me to write down?")
-                note_text = take_input(knick_input_mode)
+                vr.Speak("What would you like me to write down?")
+                note_text = take_input(Blink_input_mode)
                 note(note_text)
                 print("I have made a note of that.\n")
-                playsound._playsoundWin(os.path.join('soundeffects\sfx',"done.wav"))
+                #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"done.wav"))
 
         elif "weather" in statement:
             #API KEY REQUIRED HERE
-            if weather_api_key=="YOUR API KEY HERE":   #{this part can be comment out later,and indexing below shall be fixed
+            if weather_api_key=="fcde3268d682df74d42316d89caa74c1":   #{this part can be comment out later,and indexing below shall be fixed
                 print("You need to get an API key first!\n")
-                break
-            else:                                      #}
+                vr.Speak("You need to get an API key first!")
+            else: 
                 base_url="https://api.openweathermap.org/data/2.5/weather?"
-                playsound._playsoundWin(os.path.join('soundeffects\sfx',"cityname.mp3"))
+                #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"cityname.mp3"))
                 print("\nwhats the city?")
-                city_name= take_input(knick_input_mode)
+                city_name= take_input(Blink_input_mode)
                 complete_url=base_url+"appid="+weather_api_key+"&q="+city_name     #weather_api_key is the api key here
                 response = requests.get(complete_url)
                 x=response.json()
@@ -347,14 +345,14 @@ def showmagic():
                     current_humidiy = y["humidity"]
                     z = x["weather"]
                     weather_description = z[0]["description"]
-                    
+
                     print(" Temperature in kelvin unit = " +
                         str(current_temperature) +
                         "\nhumidity (in percentage) = " +
                         str(current_humidiy) +
                         "\ndescription = " +
                         str(weather_description))
-                    speak("Temperature in kelvin unit is " +
+                    vr.Speak("Temperature in kelvin unit is " +
                         str(current_temperature) +
                         "\nhumidity in percentage is " +
                         str(current_humidiy) +
@@ -362,209 +360,147 @@ def showmagic():
                         str(weather_description))
 
                 else:
-                    speak(" City Not Found. ")
+                    vr.Speak(" City Not Found. ")
                     print(" City Not Found ")
 
         elif 'time' in statement:
             strTime=datetime.datetime.now().strftime("%H:%M:%S")
-            speak(f"the time is {strTime}")
+            vr.Speak(f"the time is {strTime}")
 
         elif 'news' in statement:
             news = webbrowser.open_new_tab("https://timesofindia.indiatimes.com/home/headlines")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx',"news.mp3"))
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"news.mp3"))
             time.sleep(6)
 
         elif "search on google" in statement:
                 statement = statement.split("search on google")
                 search = statement
                 webbrowser.open("https://www.google.com/search?q=" + "+".join(search))
-                speak("Searching " + str(search) + " on google")
-                playsound._playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
-                time.sleep(3)
+                vr.Speak("Searching " + str(search) + " on google")
+                #playsound._#playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
+                time.sleep(1)
 
         elif 'ask' in statement:
             if wolfram_api_key=="YOUR API KEY HERE":
                 print("You need to get an API key first!")
-                break
             else:
-                speak("I can answer to computational and geographical questions and what question do you want to ask now")
-                query=take_input(knick_input_mode)
+                vr.Speak("I can answer to computational and geographical questions and what question do you want to ask now")
+                query=take_input(Blink_input_mode)
                 client = wolframalpha.Client(wolfram_api_key) #API KEY REQUIRED HERE
                 res = client.query(query)
                 answer = next(res.results).text
                 print(answer)
 
         elif 'wikipedia' in statement:
-            speak("Searching Wikipedia about it...")
+            vr.Speak("Searching Wikipedia about it...")
             statement =statement.replace("search on wikipedia about", "")
             try:
                 results = wikipedia.summary(statement, sentences=3)
-                speak("According to Wikipedia")
+                vr.Speak("According to Wikipedia")
                 print(results)
-                speak(results)
+                vr.Speak(results)
             except:
-                speak("Unknown Error Occured, say your question again.")
-                continue
+                vr.Speak("Unknown Error Occured, say your question again.")
+                
         
         elif 'who is' in statement:
             try:
-                speak("getting information from Wikipedia..")
+                vr.Speak("getting information from Wikipedia..")
                 statement =statement.replace("who is","")
                 results = wikipedia.summary(statement, sentences=3)
-                speak("According to Wikipedia")
+                vr.Speak("According to Wikipedia")
                 print(results)
-                speak(results)
+                vr.Speak(results)
             except:
-                speak("Enable to Fetch Data,try again.")
-                continue
+                vr.Speak("Enable to Fetch Data,try again.")
+                
 
         elif "where is" in  statement:
                 ind = statement.split().index("is")
                 location = statement[ind + 8:]
                 url = "https://www.google.com/maps/place/" + "".join(location)
-                speak("This is where i found, " + str(location))
+                vr.Speak("This is where i found, " + str(location))
                 webbrowser.open(url)    
-                playsound._playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
-                time.sleep(3)
+                #playsound._#playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
+                time.sleep(1)
 
         elif 'yt studio' in statement or 'open yt studio' in statement:
             webbrowser.open_new_tab("https://studio.youtube.com/")
-            speak("opening youtube creator studio")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
-            time.sleep(5)
+            vr.Speak("opening youtube creator studio")
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
+            time.sleep(2)
 
         elif 'live studio' in statement or 'livestream dashboard' in statement or 'live control room' in statement:
             webbrowser.open_new_tab('https://studio.youtube.com/channel/UCWe1CSEpVq_u6WDk3F7E2Mg/livestreaming/manage')
-            speak("opening youtube livestream dashboard")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
-            time.sleep(5)
-
-        elif 'keyword' in statement or 'google trends' in statement or 'keyword research' in statement:
-            speak("do you want me to open google trends for keyword research.")
-            print('type yes or no for Opening Google Trends')
-            gtask=input('>> ')
-            if (gtask=='yes'):
-                webbrowser.open_new_tab('https://trends.google.com/')
-            elif(gtask=='no'):
-                speak("ok, i will not open Google Trends.")
-                print("OPENING GOOGLE TRENDS : Cancelled By User")
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
-            time.sleep(5)
-
-        elif 'viewbot' in statement or 'livebot' in statement or 'view bot' in statement:
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','startingviewbot.mp3'))
-            print("if you get any error in the viewbot or it doesn't work try updating the Assistant or \n vist the official website of knick assistant & check the ViewBot Page.")
-            subprocess.call('viewbot\livebot.exe')
-            time.sleep(3)
-                
-        elif 'how were you born' in statement  or 'why were you born' in statement:
-            print('''
-            I was born on june 2021 by A Boy Who Had an Ambition To Change This World with the
-            Help Of Artificial Intelligence, Although i am still just a small step towards this
-            new ERA of A.I . But I am still Happy to be Born and serve you right now''')
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','born.mp3'))
-            time.sleep(3)
-        
-        elif 'who are you' in statement or 'what can you do' in statement:
-            print('I am Knick your Persoanl AI assistant. I am programmed for managing normal tasks in your Life')
-            speak("I am Knick your Persoanl AI assistant. I am programmed for managing normal tasks in your Life")
-            time.sleep(3)
-
-        elif 'your name' in statement or 'what is your name' in statement :
-            speak("my name is knick, how could you forget me :-(")
-            print('my name is knick your A.I assistant')
-            print(" (ㆆ_ㆆ) "*3)
-            time.sleep(3)
-
-        elif 'what is your slogan' in statement or 'what is your motive' in statement:
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','slogan.mp3'))
-            print('Leading Towards A Efficient Life.')
-            time.sleep(3)
-        
-        elif "who made you" in statement or "who created you" in statement or "who discovered you" in statement:
-            speak("I was built by my great all mighty master, Arsh")
-            print("I was built by Arsh")
+            vr.Speak("opening youtube livestream dashboard")
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx','taskcompleted.mp3'))
             time.sleep(2)
 
-        elif 'update knick' in statement or 'knick website' in statement:
-            speak("opening The Official Website For Knick Assistant.")
-            webbrowser.open_new_tab("https://knickassistant.wordpress.com/")
-            speak("please manually check for any new Available verson.")
-            time.sleep(4)
+        elif 'how were you born' in statement  or 'why were you born' in statement:
+            print('''
+            I was born with a team of university students in 2022.''')
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx','born.mp3'))
+            time.sleep(1)
+
+        elif 'who are you' in statement or 'what can you do' in statement:
+            print('I am Blink your Persoanl AI assistant. I am programmed for managing normal tasks in your Life')
+            vr.Speak("I am Blink your Persoanl AI assistant. I am programmed for managing normal tasks in your Life")
+            time.sleep(1)
+
+        elif 'who are you' in statement or 'what is your name' in statement :
+            vr.Speak("my name is Blink, how could you forget me :-(")
+            print('my name is Blink your A.I assistant')
+            print(" (ㆆ_ㆆ) "*3)
+            time.sleep(1)
+
+        elif 'what is your slogan' in statement or 'what is your motive' in statement:
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx','slogan.mp3'))
+            print('Leading Towards A Efficient Life.')
+            time.sleep(1)
 
         elif 'tell commands' in statement or 'your commands' in statement  or 'command' in statement:
-            speak("Telling you the list of my commands :")
-            speak("below is the list of all commands respectively.")
+            vr.Speak("Telling you the list of my commands :")
+            vr.Speak("below is the list of all commands respectively.")
             print('\n\nbelow is the list of all commands respectively')
             from console import command_list
             print(command_list)
-            time.sleep(3)
-        
-        elif 'chat' in statement: 
-            #print('\nChat Feature is Still in ALPHA vesion,\nso please have patience while using it.')
-            chat(knick_input_mode)
-            from console import bug
-            print(bug)
-            time.sleep(3)
-   
-        elif 'play game' in statement:
-            speak('opening mini games manager') 
-            from minigames import minigamesmanager
-            minigamesmanager.playgame()
-            time.sleep(3)
+            time.sleep(1)
 
-        elif 'insult me' in statement:
-            try:
-                evil=requests.get(url='https://evilinsult.com/generate_insult.php?lang=en&type=json')
-                data=evil.json()
-                insult=data['insult']
-                print(insult)
-                speak(insult)
-                time.sleep(2)
-            except:
-                speak("the insult generation server is down,you may try again later.")
+        # elif 'chat' in statement: 
+        #     #print('\nChat Feature is Still in under development version,\nso please have patience while using it.')
+        #     chat(Blink_input_mode)
+        #     from console import bug
+        #     print(bug)
+        #     time.sleep(1)
+
 
         elif 'i want to dictate' in statement:
-            speak("okay opening dictation option.")
+            vr.Speak("okay opening dictation option.")
             time.sleep(0.5)
             keyboard.press_and_release('win+H')
             time.sleep(0.5)
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','done.wav'))
-            continue
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx','done.wav'))
+            
 
         elif 'say' in statement or 'pronounce' in statement:
-            speak("okay, type the text.")
+            vr.Speak("okay, type the text.")
             what_to_say=input('What you Want Me To Say : ')
             print('user entered :',what_to_say)
-            speak(what_to_say)
+            vr.Speak(what_to_say)
             time.sleep(2)
 
         elif "change input mode" in statement:
-            speak("ok, select the input mode again.")
+            vr.Speak("ok, select the input mode again.")
             showmagic()
 
         elif "thanks" in statement:
             reply_to_thanks=any_random(np)
             print(reply_to_thanks)
-            speak(reply_to_thanks)
-
-        elif "support assistance" in statement:
-            speak("you can join the official discord server of knick, if you have any problem while using the assistant.")
-            query=input("do you want to join the Discord Server for Assistance? (y/n)\n>> ")
-            if query=="y":
-                webbrowser.open_new_tab("https://discord.gg/2X4WThB64b")
-                continue
-            elif query=="n":
-                print("ok : action cancelled by user")
-                continue
-            else:
-                print("you need to select from 'y' or 'n' only, IDOT!")
-                continue
+            vr.Speak(reply_to_thanks)
 
         else:
             print('Unable to Read Your Command\nError: Unknown Command')
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','systemdown.mp3'))
-            playsound._playsoundWin(os.path.join('soundeffects\sfx','responses.wav'))
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx','systemdown.mp3'))
+            #playsound._#playsoundWin(os.path.join('soundeffects\sfx','responses.wav'))
             time.sleep(2)
-
-
+        return 0
