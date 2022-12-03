@@ -1,13 +1,13 @@
 import time
 import subprocess
 import os
-import playsound
+#import #playsound
 import speech_recognition as sr
 from console import intro_header
 
 def assistant_introduction():
     print(intro_header)
-    playsound._playsoundWin(os.path.join('soundeffects\sfx',"intro.wav"))
+    #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"intro.wav"))
     time.sleep(2)
 
 def takeCommand():     
@@ -38,15 +38,15 @@ def wishMe():
     hour=datetime.datetime.now().hour
     if hour>=0 and hour<12:
         print("\n")
-        playsound._playsoundWin(os.path.join('soundeffects\sfx',"gm.mp3"))
+        #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"gm.mp3"))
         print("Hello,Good Morning")
     elif hour>=12 and hour<18:
         print("\n")
-        playsound._playsoundWin(os.path.join('soundeffects\sfx',"ga.mp3"))
+        #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"ga.mp3"))
         print("Hello,Good Afternoon")
     else:
         print("\n")
-        playsound._playsoundWin(os.path.join('soundeffects\sfx',"ge.mp3"))
+        #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"ge.mp3"))
         print("Hello,Good Evening")
 
 def note(text):
@@ -71,9 +71,8 @@ def desktop_notification(text_for_notification,duration_of_notification):
     from win10toast import ToastNotifier
     # create an object to ToastNotifier class
     n = ToastNotifier()
-    n.show_toast("KnickAI",text_for_notification, duration = duration_of_notification)
+    n.show_toast("BlinkAI",text_for_notification, duration = duration_of_notification)
 
 def cleaner():
     if os.path.exists("pywhatkit_dbs.txt"):
-        os.remove("pywhatkit_dbs.txt") #i don't know why this comes but yes, i'll remove it for sure xD
-        #this function can be used to remove more unwanted folders too.
+        os.remove("pywhatkit_dbs.txt") # A useless file created by pywhatkit

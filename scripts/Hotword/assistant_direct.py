@@ -1,10 +1,9 @@
 import sys
 sys.path.append('scripts/')
 
-
 from console import intro_header
 import time
-#assistant directly works without giving introduction or any other shit.
+#assistant directly works without giving introduction
 def start_from_hibernation():
     print(intro_header)
     from standardfunctions import wishMe
@@ -15,6 +14,3 @@ def start_from_hibernation():
 
 if __name__ == '__main__':
     start_from_hibernation()
-
-
-

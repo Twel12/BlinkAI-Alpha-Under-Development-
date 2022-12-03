@@ -30,7 +30,7 @@ def desktop_notification(text_for_notification,duration_of_notification):
     from win10toast import ToastNotifier
     # create an object to ToastNotifier class
     n = ToastNotifier()
-    n.show_toast("KnickAI",text_for_notification, duration = duration_of_notification)
+    n.show_toast("BlinkAI",text_for_notification, duration = duration_of_notification)
 
 hotword="assistant activate"
 hotword2="wake up assistant"
@@ -55,6 +55,6 @@ if __name__ == '__main__':
 
 
 #Note : if you run this file individually, then you may receive an error because of the directory structure.
-# 	 To fix this, run this file from the main directory of the project. i.e run knickassistant.py 
+# 	 To fix this, run this file from the main directory of the project. i.e run Blinkassistant.py 
 #  or
 #    change the line 47 i.e ("python scripts/Hotword/awake.py") to ("python Hotword/awake.py")
