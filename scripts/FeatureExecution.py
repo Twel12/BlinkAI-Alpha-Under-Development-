@@ -1,4 +1,4 @@
-import VoiceRun as vr
+import VoiceInput as vr
 import datetime
 import wikipedia
 import webbrowser
@@ -8,11 +8,11 @@ import subprocess
 import requests
 import wolframalpha
 import os
-# import winshell
+import winshell
 import speech_recognition as sr
 import pywhatkit
 import keyboard
-from inputmode import mode_select
+# from inputmode import mode_select
 from standardfunctions import *
 from dialogue import *
 from api_keys import *
@@ -21,7 +21,7 @@ from pathlib import Path
 BlinkInputMode=0 #Globally declare input as text default
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"assets/frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"../assets")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -310,13 +310,13 @@ def showmagic(statement):
             vr.Speak(today_date())
             time.sleep(1)
         
-        # elif "empty recycle bin" in statement:
-        #         winshell.recycle_bin().empty(
-        #             confirm=True, show_progress=False, sound=True
-        #         )
-        #         vr.Speak("you should press enter if any dialog box appears.")
-        #         time.sleep(1.3)
-        #         vr.Speak("Recycle Bin Emptied")
+        elif "empty recycle bin" in statement:
+                winshell.recycle_bin().empty(
+                    confirm=True, show_progress=False, sound=True
+                )
+                vr.Speak("you should press enter if any dialog box appears.")
+                time.sleep(1.3)
+                vr.Speak("Recycle Bin Emptied")
 
         elif "note" in statement or "remember this" in  statement:
                 print("What would you like me to write down?")

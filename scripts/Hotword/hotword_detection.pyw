@@ -55,6 +55,6 @@ if __name__ == '__main__':
 
 
 #Note : if you run this file individually, then you may receive an error because of the directory structure.
-# 	 To fix this, run this file from the main directory of the project. i.e run Blinkassistant.py 
+# 	 To fix this, run this file from the main directory of the project. i.e run gui.py 
 #  or
 #    change the line 47 i.e ("python scripts/Hotword/awake.py") to ("python Hotword/awake.py")

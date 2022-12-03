@@ -5,4 +5,4 @@ To run first open terminal in same path
 
 To activate the personal assistant run the following command
 
-```python scripts/gui.py```
+```python scripts/BlinkAI.py```
