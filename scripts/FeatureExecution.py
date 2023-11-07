@@ -321,7 +321,7 @@ def showmagic(statement):
         elif "note" in statement or "remember this" in  statement:
                 print("What would you like me to write down?")
                 vr.Speak("What would you like me to write down?")
-                note_text = take_input(Blink_input_mode)
+                note_text = take_input(BlinkInputMode)
                 note(note_text)
                 print("I have made a note of that.\n")
                 #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"done.wav"))
@@ -335,7 +335,7 @@ def showmagic(statement):
                 base_url="https://api.openweathermap.org/data/2.5/weather?"
                 #playsound._#playsoundWin(os.path.join('soundeffects\sfx',"cityname.mp3"))
                 print("\nwhats the city?")
-                city_name= take_input(Blink_input_mode)
+                city_name= take_input(BlinkInputMode)
                 complete_url=base_url+"appid="+weather_api_key+"&q="+city_name     #weather_api_key is the api key here
                 response = requests.get(complete_url)
                 x=response.json()
@@ -385,7 +385,7 @@ def showmagic(statement):
                 print("You need to get an API key first!")
             else:
                 vr.Speak("I can answer to computational and geographical questions and what question do you want to ask now")
-                query=take_input(Blink_input_mode)
+                query=take_input(BlinkInputMode)
                 client = wolframalpha.Client(wolfram_api_key) #API KEY REQUIRED HERE
                 res = client.query(query)
                 answer = next(res.results).text
@@ -468,7 +468,7 @@ def showmagic(statement):
 
         # elif 'chat' in statement: 
         #     #print('\nChat Feature is Still in under development version,\nso please have patience while using it.')
-        #     chat(Blink_input_mode)
+        #     chat(BlinkInputMode)
         #     from console import bug
         #     print(bug)
         #     time.sleep(1)
